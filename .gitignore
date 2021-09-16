@@ -146,3 +146,5 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+!/gradle/wrapper/gradle-wrapper.jar
