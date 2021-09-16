@@ -1,0 +1,9 @@
+name: ${baseName}
+main: ${basePackage}.${baseName}
+version: ${version}
+description: ${description}
+api-version: ${apiVersion}
+author: UberPilot
+libraries:
+  - "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
+  - "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
