@@ -41,9 +41,9 @@ repositories {
     mavenCentral()
 }
 
-val includeAll = configurations.create("includeSome")
+val includeAll = configurations.create("includeAll")
 
-val includeNonLibraryLoader = configurations.create("includeAll")
+val includeNonLibraryLoader = configurations.create("includeNonLibraryLoader")
 includeNonLibraryLoader.extendsFrom(includeAll)
 
 dependencies {
