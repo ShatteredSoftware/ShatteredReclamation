@@ -1,4 +1,4 @@
-package com.github.shatteredsoftware
+package com.github.shatteredsoftware.kotlinplugin
 
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -7,7 +7,8 @@ class KotlinPlugin : JavaPlugin() {
         private var internalInstance: KotlinPlugin? = null
 
         @JvmStatic
-        val instance: KotlinPlugin get() = internalInstance ?: throw IllegalStateException("Could not get instance; is the plugin enabled?")
+        val instance: KotlinPlugin
+            get() = internalInstance ?: throw IllegalStateException("Could not get instance; is the plugin enabled?")
     }
 
     init {

@@ -1,4 +1,4 @@
-package com.github.shatteredsoftware
+package com.github.shatteredsoftware.kotlinplugin
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import org.junit.jupiter.api.AfterAll

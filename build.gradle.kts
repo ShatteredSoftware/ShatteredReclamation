@@ -5,6 +5,7 @@ import java.io.BufferedReader
 plugins {
     kotlin("jvm") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"
+    `maven-publish`
 }
 
 var commitHash: String by extra
@@ -21,14 +22,15 @@ commitHash = Runtime
     }
 
 val baseName: String by project
-val basePackage: String by project
+val baseGroup: String by project
+val basePackage = "$baseGroup.${baseName.toLowerCase()}"
 val baseVersion: String by project
 val kotlinVersion: String by project
 val minimumApiVersion: String by project
 val description: String by project
 
 version = "$baseVersion-$commitHash"
-group = "software.shattered"
+group = baseGroup
 
 
 repositories {
@@ -72,6 +74,7 @@ tasks.register<ShadowJar>("mainJar") {
 tasks.processResources {
     expand(
         "baseName" to baseName,
+        "baseGroup" to baseGroup,
         "basePackage" to basePackage,
         "baseVersion" to baseVersion,
         "description" to description,
