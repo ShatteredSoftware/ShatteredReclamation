@@ -62,7 +62,6 @@ tasks.register<ShadowJar>("fullJar") {
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
     configurations = listOf(includeNonLibraryLoader)
-
 }
 
 tasks.register<ShadowJar>("mainJar") {
