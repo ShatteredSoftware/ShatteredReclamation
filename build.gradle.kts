@@ -52,10 +52,10 @@ implementationConfiguration.extendsFrom(includeNonLibraryLoader)
 
 dependencies {
     implementation("org.spigotmc:spigot-api:$minimumApiVersion-R0.1-SNAPSHOT")
-    includeNonLibraryLoader(kotlin("stdlib"))
-    includeNonLibraryLoader(kotlin("reflect"))
+    includeNonLibraryLoader("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    includeNonLibraryLoader("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 }
 
 tasks.register<ShadowJar>("fullJar") {
