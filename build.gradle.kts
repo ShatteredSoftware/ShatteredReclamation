@@ -58,8 +58,6 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-val apiVersion = minimumApiVersion
-
 tasks.register<ShadowJar>("fullJar") {
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
@@ -83,7 +81,7 @@ tasks.processResources {
         "commit" to commitHash,
         "version" to version,
         "kotlinVersion" to kotlinVersion,
-        "apiVersion" to apiVersion
+        "apiVersion" to minimumApiVersion
     )
 }
 
