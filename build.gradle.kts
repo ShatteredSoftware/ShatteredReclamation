@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.BufferedReader
 
@@ -63,18 +64,31 @@ dependencies {
 }
 
 // Set up a task that includes all dependencies, including those that would be loaded with library loader.
-tasks.register<ShadowJar>("fullJar") {
+val relocateFullJar = tasks.register<ConfigureShadowRelocation>("relocateFullJar") {
+    target = fullJar.get()
+    prefix = "$basePackage.include"
+}
+
+val fullJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("fullJar") {
+    dependsOn(relocateFullJar)
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
     configurations = listOf(includeNonLibraryLoader)
 }
 
 // Set up a task that includes all dependencies except those that would be loaded with library loader.
-tasks.register<ShadowJar>("mainJar") {
+val relocateMainJar = tasks.register<ConfigureShadowRelocation>("relocateMainJar") {
+    target = mainJar.get()
+    prefix = "$basePackage.include"
+}
+
+val mainJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("mainJar") {
+    dependsOn(relocateMainJar)
     from(sourceSets.main.get().output)
     archiveClassifier.set("")
     configurations = listOf(includeAll)
 }
+
 
 // Fix placeholders in resource files (see plugin.yml)
 tasks.processResources {
