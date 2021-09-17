@@ -1,3 +1,3 @@
 
-rootProject.name = "TestPlugin"
+rootProject.name = "KotlinPlugin"
 
