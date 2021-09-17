@@ -46,9 +46,7 @@ implementationConfiguration.extendsFrom(includeNonLibraryLoader)
 // Declare repositories so we can get the libraries we need during development.
 repositories {
     mavenLocal()
-    maven(
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    )
+    maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     maven(url = "https://oss.sonatype.org/content/repositories/central")
     mavenCentral()
