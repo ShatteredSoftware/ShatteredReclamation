@@ -7,6 +7,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
+// Get the current Git commit to be added to the version -- if you're not using Git, you should be!
 var commitHash: String by extra
 commitHash = Runtime
     .getRuntime()
@@ -20,18 +21,28 @@ commitHash = Runtime
         output.trim()
     }
 
+// Project properties
 val baseName: String by project
 val baseGroup: String by project
-val basePackage = "$baseGroup.${baseName.toLowerCase()}"
 val baseVersion: String by project
 val kotlinVersion: String by project
 val minimumApiVersion: String by project
 val description: String by project
+val basePackage = "$baseGroup.${baseName.toLowerCase()}"
 
 version = "$baseVersion-$commitHash"
 group = baseGroup
 
+// Set up configurations for Shadow to use.
+val includeAll = configurations.create("includeAll")
 
+val includeNonLibraryLoader = configurations.create("includeNonLibraryLoader")
+includeNonLibraryLoader.extendsFrom(includeAll)
+
+val implementationConfiguration = configurations.getByName("implementation")
+implementationConfiguration.extendsFrom(includeNonLibraryLoader)
+
+// Declare repositories so we can get the libraries we need during development.
 repositories {
     mavenLocal()
     maven(
@@ -42,14 +53,7 @@ repositories {
     mavenCentral()
 }
 
-val includeAll = configurations.create("includeAll")
-
-val includeNonLibraryLoader = configurations.create("includeNonLibraryLoader")
-includeNonLibraryLoader.extendsFrom(includeAll)
-
-val implementationConfiguration = configurations.getByName("implementation")
-implementationConfiguration.extendsFrom(includeNonLibraryLoader)
-
+// Declare dependencies using the above configurations
 dependencies {
     implementation("org.spigotmc:spigot-api:$minimumApiVersion-R0.1-SNAPSHOT")
     includeNonLibraryLoader("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
@@ -58,18 +62,21 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 }
 
+// Set up a task that includes all dependencies, including those that would be loaded with library loader.
 tasks.register<ShadowJar>("fullJar") {
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
     configurations = listOf(includeNonLibraryLoader)
 }
 
+// Set up a task that includes all dependencies except those that would be loaded with library loader.
 tasks.register<ShadowJar>("mainJar") {
     from(sourceSets.main.get().output)
     archiveClassifier.set("")
     configurations = listOf(includeAll)
 }
 
+// Fix placeholders in resource files (see plugin.yml)
 tasks.processResources {
     expand(
         "baseName" to baseName,
@@ -84,14 +91,17 @@ tasks.processResources {
     )
 }
 
+// Build both jars in the new "jars" task
 tasks.register("jars") {
     dependsOn(setOf("fullJar", "mainJar"))
 }
 
+// Use the above jars task when we request a jar.
 tasks.jar {
     dependsOn("jars")
 }
 
+// Fixes IntelliJ not getting test results.
 tasks.test {
     useJUnitPlatform()
 }
