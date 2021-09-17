@@ -47,6 +47,9 @@ val includeAll = configurations.create("includeAll")
 val includeNonLibraryLoader = configurations.create("includeNonLibraryLoader")
 includeNonLibraryLoader.extendsFrom(includeAll)
 
+val implementationConfiguration = configurations.getByName("implementation")
+implementationConfiguration.extendsFrom(includeNonLibraryLoader)
+
 dependencies {
     implementation("org.spigotmc:spigot-api:$minimumApiVersion-R0.1-SNAPSHOT")
     includeNonLibraryLoader(kotlin("stdlib"))
