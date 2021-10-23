@@ -92,7 +92,7 @@ class ShatteredReclamation : JavaPlugin() {
         val possibleWorld = getWorld(world.name) ?: return
         val (config, cache) = possibleWorld
         val delta = cache.loaded(chunk)
-        if (delta < config.period * 1000 /* * 60 */) {
+        if (delta < config.period * 1000 * 60) {
             return
         }
         val times = ceil(delta.toDouble() / config.period.toDouble()).roundToInt()
