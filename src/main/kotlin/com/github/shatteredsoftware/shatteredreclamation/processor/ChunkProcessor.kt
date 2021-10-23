@@ -1,4 +1,8 @@
 package com.github.shatteredsoftware.shatteredreclamation.processor
 
-class ChunkProcessor {
+import com.github.shatteredsoftware.shatteredreclamation.ShatteredReclamation
+
+class ChunkProcessor(val plugin: ShatteredReclamation) {
+    init {
+    }
 }

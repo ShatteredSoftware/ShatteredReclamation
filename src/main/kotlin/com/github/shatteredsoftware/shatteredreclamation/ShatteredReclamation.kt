@@ -7,6 +7,7 @@ import com.github.shatteredsoftware.shatteredreclamation.data.ReclamationWorld
 import com.github.shatteredsoftware.shatteredreclamation.listeners.ChunkLoadListener
 import com.github.shatteredsoftware.shatteredreclamation.storage.WorldChunkCache
 import com.github.shynixn.mccoroutine.launch
+import com.github.shynixn.mccoroutine.launchAsync
 import kotlinx.coroutines.delay
 import org.bukkit.Chunk
 import org.bukkit.World
@@ -83,7 +84,7 @@ class ShatteredReclamation : JavaPlugin() {
     }
 
     fun processChunk(world: World, chunk: Chunk) {
-        launch {
+        launchAsync {
             processChunkAsync(world, chunk)
         }
     }
@@ -100,6 +101,9 @@ class ShatteredReclamation : JavaPlugin() {
             for (y in world.minHeight..world.maxHeight) {
                 for (z in 0..15) {
                     delay(this.config.threads.delay)
+                    if (!chunk.isLoaded) {
+                        return
+                    }
                     val block = chunk.getBlock(x, y, z)
                     processGroups(config.spread, chunk, block, times)
                     processGroups(config.decay, chunk, block, times)

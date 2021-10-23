@@ -1,110 +1,81 @@
-<h1 align="center">Example Kotlin Plugin</h1>
+<h1 align="center">ShatteredReclamation</h1>
 <p align="center">
-<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/ShatteredSoftware/KotlinPlugin/prerelease?label=Prerelease&style=for-the-badge">
-<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/ShatteredSoftware/KotlinPlugin/tagged-release?label=Release&style=for-the-badge">
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/ShatteredSoftware/ShatteredReclamation/prerelease?label=Prerelease&style=for-the-badge">
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/ShatteredSoftware/ShatteredReclamation/tagged-release?label=Release&style=for-the-badge">
 </p>
 <hr>
 
-This is an example Kotlin plugin for Spigot that has gradle set up already so that dependencies can be split between 
-multiple jars, either to use LibraryLoader, or to include them in the generated jar.
+This is a plugin that allows the wild to slowly take player creations back over.
 
-## Gradle
-Much of what this repo does can be configured in the `gradle.properties`:
-```properties
-kotlin.code.style=official
+## Config
 
-baseName=KotlinPlugin
-baseGroup=com.github.shatteredsoftware
-minimumApiVersion=1.17
-description=A really simple Kotlin plugin.
+### Threads
 
-baseVersion=1.0.0
-
-kotlinVersion=1.5.30
-```
-
-### `plugin.yml`
-This will generate a `plugin.yml` like so:
+This plugin uses multiple threads (powered by Kotlin's coroutines) so that 
+spreading blocks does not affect the main thread.
 ```yaml
-name: KotlinPlugin
-main: com.github.shatteredsoftware.kotlinplugin.KotlinPlugin
-version: 1.0.0-abcdefgh
-description: A really simple Kotlin plugin.
-api-version: 1.17
-author: UberPilot
-libraries:
-  - "org.jetbrains.kotlin:kotlin-reflect:1.5.30"
-  - "org.jetbrains.kotlin:kotlin-stdlib:1.5.30"
+# Delay in milliseconds between each block processed.
+delay: 5
+# Number of seconds between each block placement report. Set to 0 to disable.
+report_interval: 60.0
+# Syncs apply block changes that are queued from spreading/decaying. This 
+# controls how frequently those changes are applied, in seconds. Must be set
+# above zero.
+sync_interval: 0.25
+# The max number of blocks that can be changed in one sync.
+max_sync_changes: 1000
 ```
 
-Version is pulled from the current git hash and `baseVersion`. Main is built from a combination of `baseName` and 
-`baseGroup`.
-
-### Jars
-
-Two jars are produced: `name-version-hash.jar` and `name-version-hash-legacy.jar`. The first one uses the new 
-LibraryLoader to load Kotlin in at runtime; the other includes Kotlin in the jar for older versions that don't have
-LibraryLoader.
-
-## GitHub Actions
-This repo also has GitHub actions set up in a way that builds the plugin jars on each commit, and automatically creates
-releases when they're tagged with a version matching `#.#.#`. 
-
-## FAQ
-
-### How do I add external libraries?
-
-1. Add the library's repository to the `repositories` block.
-2. Add the library to the dependencies block.
-   * If the plugin is intended to be included in none of the jars (it's given at runtime), add it to the 
-     `implementation` configuration.
-   * If the plugin is intended to be loaded with Library Loader, add it to the `includeNonLibraryLoader` configuration.
-   * If the plugin is intended to be included in all of the jars, add it to the `includeAll` configuration.
-
-<summary>
-<strong>A more detailed example using bStats:</strong>
-<details>
-<ol>
-   <li>Add the bStats repo to the <code>repositories</code> block:
-      <pre>
-repositories {
-    mavenLocal()
-    maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-    maven(url = "https://oss.sonatype.org/content/repositories/central")
-+   maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
-    mavenCentral()
-}</pre>
-   </li>
-   <li>Add bStats to the <code>dependencies</code> block:
-   <pre>
-dependencies {
-    implementation("org.spigotmc:spigot-api:$minimumApiVersion-R0.1-SNAPSHOT")
-+   includeAll("org.bstats:bstats:2.2.1")
-    includeNonLibraryLoader("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    includeNonLibraryLoader("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-}</pre>
-   I chose <code>includeAll</code> because I don't want to load bStats with Library Loader, but instead want to include
-   it in my plugin.
-   </li>
-   <li>Freely use bStats in your plugin after refreshing your gradle project.</li>
-</ol>
-</details>
-</summary>
-
-### Do I need to set up shading?
-
-Shading is configured automatically to shade everything based on the base package name. If your needs are more specific,
-you can disable the `relocateFullJar` and `relocateMainJar` tasks and instead configure things using `relocate()` calls
-in either of the `fullJar` and `mainJar` tasks, like so, using bStats as an example:
-
-```kotlin
-val mainJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("mainJar") {
-    dependsOn(relocateMainJar)
-    from(sourceSets.main.get().output)
-    archiveClassifier.set("")
-    configurations = listOf(includeAll)
-    relocate("org.bstats", "$basePackage.bstats")
-}
+### Decay Group
+```yaml
+# A list of materials that decay following these rules
+materials:
+  - GRASS_PATH
+# The chance that a block will decay per time period
+chance: 0.2
+# Added to chance, every non-air block above this until the first block 
+# adds this to the above chance of decay. Set to 0 to disable.
+weight_mod: 0.0001
+# The blocks this can decay into, chosen randomly.
+into:
+  - DIRT
+  - COARSE_DIRT
+# Whether block properties (like rotation, half, and shape) should be randomized.
+# Defaults to true.
+randomize: true
 ```
+### Spread Group
+```yaml
+# The materials that should spread
+materials:
+  - GRASS
+# The chance between 0 and 1 that a block should spread per time period. 
+# Set this lower for more common blocks or else they will quickly overtake 
+# everything else.
+chance: 0.0005
+# How many blocks away should this look for new spaces? 1 means blocks directly
+# touching the spreading block, 2 means blocks touching those blocks.
+range: 1
+# Blocks that this block can spread to
+valid_blocks:
+  - GRASS_BLOCK
+  - DIRT
+# If this block should be placed above the target block. Otherwise, replaces the
+# target block. Defaults to true.
+above: true
+# If this block should match the block that's spreading. Defaults to true.
+match: false
+# If match is false, a block is picked from these types:
+# Defaults to empty.
+choices: 
+  - TALL_GRASS
+  - GRASS
+# Whether block properties (like rotation, half, and shape) should be randomized.
+# Defaults to true.
+randomize: true
+```
+
+## Libraries
+* Kotlin, Kotlin-Reflect and Kotlinx-Coroutines by JetBrains
+* [MCCoroutine](https://github.com/Shynixn/MCCoroutine) by Shynixn
+* [Jackson](https://github.com/FasterXML/jackson) by FasterXML
