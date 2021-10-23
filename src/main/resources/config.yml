@@ -1,6 +1,6 @@
 threads:
   delay: 5 # 5ms between each block processing, don't take this lower than 5
-  report_interval: 60.0 # n seconds between each report
+  report_interval: 1.0 # n minutes between each report
   sync_interval: 0.25 # n seconds between each sync
   max_sync_changes: 100 # n block changes per sync
 worlds:

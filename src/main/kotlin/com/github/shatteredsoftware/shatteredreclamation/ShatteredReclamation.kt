@@ -75,10 +75,11 @@ class ShatteredReclamation : JavaPlugin() {
         if (config.threads.reportInterval != 0.0) {
             object : BukkitRunnable() {
                 override fun run() {
-                    logger.info("Placed $actions in the last minute.")
+                    val plural = if(config.threads.reportInterval != 1.0) "s" else ""
+                    logger.info("Placed $actions in the last ${config.threads.reportInterval} minute${plural}.")
                     actions = 0
                 }
-            }.runTaskTimer(this, 20L * 60, (20 * config.threads.reportInterval).roundToLong())
+            }.runTaskTimer(this, 20L * 60, (20 * 60 * config.threads.reportInterval).roundToLong())
         }
     }
 

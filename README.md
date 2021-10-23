@@ -16,8 +16,8 @@ spreading blocks does not affect the main thread.
 ```yaml
 # Delay in milliseconds between each block processed.
 delay: 5
-# Number of seconds between each block placement report. Set to 0 to disable.
-report_interval: 60.0
+# Number of minutes between each block placement report. Set to 0 to disable.
+report_interval: 1.0
 # Syncs apply block changes that are queued from spreading/decaying. This 
 # controls how frequently those changes are applied, in seconds. Must be set
 # above zero.
