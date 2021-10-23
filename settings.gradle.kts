@@ -1,3 +1,3 @@
 
-rootProject.name = "KotlinPlugin"
+rootProject.name = "ShatteredReclamation"
 

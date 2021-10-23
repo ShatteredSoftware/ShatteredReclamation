@@ -1,4 +1,4 @@
-package com.github.shatteredsoftware.kotlinplugin
+package com.github.shatteredsoftware.shatteredreclamation
 
 import org.junit.jupiter.api.Test
 

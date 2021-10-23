@@ -1,0 +1,37 @@
+threads:
+  delay: 5 # 5ms between each block processing, don't take this lower than 5
+  report_interval: 60.0 # n seconds between each report
+  sync_interval: 0.25 # n seconds between each sync
+  max_sync_changes: 100 # n block changes per sync
+worlds:
+  # worlds that appear in here are enabled
+  world:
+    # minutes per spread operation
+    period: 1440
+    # materials that spread to nearby surface blocks
+    spread:
+      - materials:
+          - GRASS
+          - TALL_GRASS
+          - FERN
+          - LARGE_FERN
+        range: 1
+        chance: 0.02
+        valid_blocks:
+          - GRASS_BLOCK
+          - DIRT
+    decay:
+      - materials:
+          - STONE_BRICKS
+        # chance as a decimal (1 = guaranteed, 0 = never)
+        chance: 0
+        # additive chance per each block between it and an open space
+        weight_mod: 0.01
+        into:
+          - CRACKED_STONE_BRICKS
+      - materials:
+          - DIRT_PATH
+        chance: 0.02
+        into:
+          - DIRT
+          - COARSE_DIRT

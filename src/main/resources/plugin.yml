@@ -7,3 +7,6 @@ author: UberPilot
 libraries:
   - "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
   - "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+  - "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}"
+  - "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
+  - "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
