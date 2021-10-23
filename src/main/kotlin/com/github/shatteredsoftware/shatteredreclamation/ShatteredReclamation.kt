@@ -9,6 +9,7 @@ import com.github.shatteredsoftware.shatteredreclamation.storage.WorldChunkCache
 import com.github.shynixn.mccoroutine.launch
 import com.github.shynixn.mccoroutine.launchAsync
 import kotlinx.coroutines.delay
+import org.bstats.bukkit.Metrics
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -39,6 +40,8 @@ class ShatteredReclamation : JavaPlugin() {
     private val caches: MutableMap<String, Pair<ReclamationWorld, WorldChunkCache>> = mutableMapOf()
 
     val worldsFolder = File(this.dataFolder, "worlds")
+
+    private val stats = Metrics(this, 13128)
 
     init {
         internalInstance = this

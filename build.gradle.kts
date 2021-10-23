@@ -68,6 +68,7 @@ dependencies {
 
     includeAll("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:1.5.0")
     includeAll("com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:1.5.0")
+    includeAll("org.bstats:bstats-bukkit:2.2.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 }
