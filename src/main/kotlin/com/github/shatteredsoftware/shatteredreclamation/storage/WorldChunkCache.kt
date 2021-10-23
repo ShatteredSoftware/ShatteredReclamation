@@ -12,6 +12,7 @@ import java.util.zip.InflaterOutputStream
 
 class WorldChunkCache {
     companion object {
+        private var saving: Boolean = false
         private const val itemSize = Long.SIZE_BYTES * 2
 
         fun input(original: ByteArray): WorldChunkCache {
@@ -53,16 +54,16 @@ class WorldChunkCache {
     private val map = mutableMapOf<Long, Long>()
 
     fun loaded(id: Long, time: Long): Long {
+        if (saving) {
+            return 0
+        }
         val last = map[id] ?: System.currentTimeMillis()
         map[id] = time
         return time - last
     }
 
     fun loaded(chunk: Chunk): Long {
-        val currentTime = System.currentTimeMillis()
-        val last = map[chunk.id] ?: currentTime
-        map[chunk.id] = currentTime
-        return currentTime - last
+        return loaded(chunk.id, System.currentTimeMillis())
     }
 
     fun lastLoaded(id: Long): Long? {
@@ -79,10 +80,11 @@ class WorldChunkCache {
     }
 
     fun output(): ByteArray {
-        val buffer = ByteBuffer.allocate(itemSize * map.size)
+        val buffer = ByteBuffer.allocate(map.size * itemSize)
+        val longBuffer = buffer.asLongBuffer()
         map.forEach { (id, lastModified) ->
-            buffer.putLong(id)
-            buffer.putLong(lastModified)
+            longBuffer.put(id)
+            longBuffer.put(lastModified)
         }
         val out = buffer.array()
         val ostream = ByteArrayOutputStream()

@@ -58,21 +58,25 @@ class ShatteredReclamation : JavaPlugin() {
                 var processCount = 0
                 while (this@ShatteredReclamation.processActions.size > 0 && processCount < config.threads.maxSyncChanges) {
                     val action = this@ShatteredReclamation.processActions.poll()
-                    if (action.location.chunk.isLoaded) {
-                        action.apply()
-                        actions++
-                        processCount++
+                    val chunk = action.location.chunk
+                    if (!chunk.world.getChunkAt(chunk.x, chunk.z).isLoaded) {
+                        continue
                     }
+                    action.apply()
+                    actions++
+                    processCount++
                 }
             }
-        }.runTaskTimer(this, 0, (20 * config.threads.syncInterval).roundToLong())
+        }.runTaskTimer(this, 0, (ceil(20 * config.threads.syncInterval)).roundToLong())
 
-        object : BukkitRunnable() {
-            override fun run() {
-                logger.info("Placed $actions in the last minute.")
-                actions = 0
-            }
-        }.runTaskTimer(this, 20L * 60, (20 * config.threads.reportInterval).roundToLong())
+        if (config.threads.reportInterval != 0.0) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    logger.info("Placed $actions in the last minute.")
+                    actions = 0
+                }
+            }.runTaskTimer(this, 20L * 60, (20 * config.threads.reportInterval).roundToLong())
+        }
     }
 
     fun getWorld(worldName: String): Pair<ReclamationWorld, WorldChunkCache>? {
@@ -101,7 +105,7 @@ class ShatteredReclamation : JavaPlugin() {
             for (y in world.minHeight..world.maxHeight) {
                 for (z in 0..15) {
                     delay(this.config.threads.delay)
-                    if (!chunk.isLoaded) {
+                    if (!world.getChunkAt(chunk.x, chunk.z).isLoaded) {
                         return
                     }
                     val block = chunk.getBlock(x, y, z)

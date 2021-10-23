@@ -76,6 +76,8 @@ val fullJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("fullJar") {
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
     configurations = listOf(includeNonLibraryLoader)
+    relocate("org.bstats", "$basePackage.bstats")
+    relocate("com.github.shynixn.mccoroutine", "$basePackage.mccorutine")
 }
 
 val mainJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("mainJar") {
