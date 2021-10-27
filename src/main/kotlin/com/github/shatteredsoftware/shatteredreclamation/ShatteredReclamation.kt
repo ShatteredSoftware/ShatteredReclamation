@@ -106,7 +106,7 @@ class ShatteredReclamation : JavaPlugin() {
         }
         val times = ceil(delta.toDouble() / config.period.toDouble()).roundToInt()
         for (x in 0..15) {
-            for (y in world.minHeight..world.maxHeight) {
+            for (y in world.minHeight until world.maxHeight) {
                 for (z in 0..15) {
                     delay(this.config.threads.delay)
                     if (!world.getChunkAt(chunk.x, chunk.z).isLoaded) {
