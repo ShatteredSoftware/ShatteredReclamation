@@ -73,20 +73,30 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 }
 
+val relocateFullJar = tasks.register<ConfigureShadowRelocation>("relocateFullJar") {
+    target = fullJar.get()
+    prefix = "$basePackage.include"
+}
+
 val fullJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("fullJar") {
+    dependsOn(relocateFullJar)
     from(sourceSets.main.get().output)
     archiveClassifier.set("legacy")
     configurations = listOf(includeNonLibraryLoader)
-    relocate("org.bstats", "$basePackage.bstats")
-    relocate("com.github.shynixn.mccoroutine", "$basePackage.mccorutine")
+}
+
+// Set up a task that includes all dependencies except those that would be loaded with library loader.
+val relocateMainJar = tasks.register<ConfigureShadowRelocation>("relocateMainJar") {
+    target = mainJar.get()
+    prefix = "$basePackage.include"
 }
 
 val mainJar: TaskProvider<ShadowJar> = tasks.register<ShadowJar>("mainJar") {
+    dependsOn(relocateMainJar)
     from(sourceSets.main.get().output)
     archiveClassifier.set("")
     configurations = listOf(includeAll)
 }
-
 
 // Fix placeholders in resource files (see plugin.yml)
 tasks.processResources {

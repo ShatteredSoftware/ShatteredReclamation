@@ -43,6 +43,8 @@ class ShatteredReclamation : JavaPlugin() {
 
     private val stats = Metrics(this, 13128)
 
+    private var stopping = false;
+
     init {
         internalInstance = this
     }
@@ -60,6 +62,9 @@ class ShatteredReclamation : JavaPlugin() {
             override fun run() {
                 var processCount = 0
                 while (this@ShatteredReclamation.processActions.size > 0 && processCount < config.threads.maxSyncChanges) {
+                    if (this.stopping) {
+                        return;
+                    }
                     val action = this@ShatteredReclamation.processActions.poll()
                     val chunk = action.location.chunk
                     if (!chunk.world.getChunkAt(chunk.x, chunk.z).isLoaded) {
@@ -108,6 +113,9 @@ class ShatteredReclamation : JavaPlugin() {
         for (x in 0..15) {
             for (y in world.minHeight until world.maxHeight) {
                 for (z in 0..15) {
+                    if (this.stopping) {
+                        return;
+                    }
                     delay(this.config.threads.delay)
                     if (!world.getChunkAt(chunk.x, chunk.z).isLoaded) {
                         return
@@ -140,6 +148,7 @@ class ShatteredReclamation : JavaPlugin() {
     }
 
     override fun onDisable() {
+        this.stopping = true;
         this.caches.forEach { (name, configCache) ->
             val (_, cache) = configCache
             cache.writeToFile(File(this.worldsFolder, "$name.cache"))
